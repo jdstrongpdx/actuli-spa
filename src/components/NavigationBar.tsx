@@ -86,7 +86,6 @@ export const NavigationBar = () => {
                                 <Nav.Link href="/" eventKey="">Home</Nav.Link>
                             </Nav.Item>
                             <AuthenticatedTemplate>
-                                <Nav.Link href="/todolist" eventKey="todolist">ToDoList</Nav.Link>
                                 <Nav.Item>
                                     <Nav.Link href="/profile" eventKey="profile">Profile</Nav.Link>
                                 </Nav.Item>
@@ -101,10 +100,12 @@ export const NavigationBar = () => {
 
                         {/* Right-aligned content */}
                         <Nav className="ms-auto">
-                            <button onClick={toggleTheme} style={{ padding: '10px', fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer' }}>
-                                {theme === 'light' ? <MdDarkMode /> :   <MdLightMode style={{ filter: 'invert(1)' }} />
-                                }
-                            </button>
+                            <Nav.Item>
+                                <button onClick={toggleTheme} style={{ padding: '10px', fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                    {theme === 'light' ? <MdDarkMode /> :   <MdLightMode style={{ filter: 'invert(1)' }} />
+                                    }
+                                </button>
+                            </Nav.Item>
                             <Nav.Item>
                                 <Nav.Link href="/auth" eventKey="auth">Auth Details</Nav.Link>
                             </Nav.Item>

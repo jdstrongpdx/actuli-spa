@@ -1,31 +1,30 @@
 import { useEffect, useState } from 'react';
 import { MsalAuthenticationTemplate } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
-
-import { ListView } from '../components/tasks/ListView';
 import { loginRequest, protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
+import { GoalListView } from "../components/tasks/GoalListView";
 
-const ToDoListContent = () => {
+const GoalListContent = () => {
     const { error, execute } = useFetchWithMsal({
-        scopes: protectedResources.toDoListAPI.scopes.read,
+        scopes: protectedResources.goalsAPI.scopes.read,
     });
 
-    const [toDoListData, setToDoListData] = useState(null);
+    const [goalListData, setGoalListData] = useState(null);
 
     useEffect(() => {
-        if (!toDoListData) {
-            execute("GET", protectedResources.toDoListAPI.endpoint).then((response) => {
-                setToDoListData(response);
+        if (!goalListData) {
+            execute("GET", protectedResources.goalsAPI.endpoint).then((response) => {
+                setGoalListData(response);
             });
         }
-    }, [execute, toDoListData])
+    }, [execute, goalListData])
 
     if (error) {
         return <div>Error: {error.message}</div>;
     }
 
-    return <>{toDoListData ? <ListView toDoListData={toDoListData} /> : null}</>;
+    return <>{goalListData ? <GoalListView goalListData={goalListData} /> : null}</>;
 };
 
 /**
@@ -35,7 +34,7 @@ const ToDoListContent = () => {
  * authentication is in progress or a component to display if an error occurs. For more, visit:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
  */
-export const ToDoList = () => {
+export const GoalsList = () => {
     const authRequest = {
         ...loginRequest,
     };
@@ -45,7 +44,7 @@ export const ToDoList = () => {
             interactionType={InteractionType.Redirect} 
             authenticationRequest={authRequest}
         >
-            <ToDoListContent />
+            <GoalListContent />
         </MsalAuthenticationTemplate>
     );
 };

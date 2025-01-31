@@ -14,7 +14,7 @@ const usePrevious = (value) => {
     return ref.current;
 }
 
-export const ToDoItem = (props) => {
+export const GoalItem = (props) => {
     const [isEditing, setEditing] = useState(false);
     const [newDescription, setDescription] = useState('');
 
@@ -34,13 +34,13 @@ export const ToDoItem = (props) => {
             return;
         }
 
-        props.editTask(props.id, newDescription);
+        props.editGoal(props.id, newDescription);
         setDescription('');
         setEditing(false);
     }
 
     const editingTemplate = (
-        <div className="todo-edit">
+        <div className="goal-edit">
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label htmlFor={props.id}>New name for {props.name}</Form.Label>
@@ -67,16 +67,16 @@ export const ToDoItem = (props) => {
     );
 
     const viewTemplate = (
-        <div className="todo-view">
+        <div className="goal-view">
             <Form.Group>
-                <label className="todo-label" htmlFor={props.id}>
+                <label className="goal-label" htmlFor={props.id}>
                     {props.description}
                 </label>
-                <ButtonGroup className="todo-view-btn">
+                <ButtonGroup className="goal-view-btn">
                     <Button variant="warning" onClick={() => setEditing(true)} ref={editButtonRef}>
                         Edit
                     </Button>
-                    <Button variant="danger" onClick={() => props.deleteTask(props.id)}>
+                    <Button variant="danger" onClick={() => props.deleteGoal(props.id)}>
                         Delete
                     </Button>
                 </ButtonGroup>
@@ -96,5 +96,5 @@ export const ToDoItem = (props) => {
 
     }, [wasEditing, isEditing]);
 
-    return <ListGroup.Item className="todo-item">{isEditing ? editingTemplate : viewTemplate}</ListGroup.Item>;
+    return <ListGroup.Item className="goal-item">{isEditing ? editingTemplate : viewTemplate}</ListGroup.Item>;
 }

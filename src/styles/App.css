@@ -167,21 +167,21 @@ main {
     justify-content: space-evenly
 }
 
-.todo-form {
+.goal-form {
     width: 60%;
 }
 
-.todo-list {
+.goal-list {
     width: 60%;
 }
 
-.todo-label {
+.goal-label {
     font-size: large;
     margin-right: 22%;
     margin-left: 3%;
 }
 
-.todo-view-btn {
+.goal-view-btn {
     float: right;
 }
 

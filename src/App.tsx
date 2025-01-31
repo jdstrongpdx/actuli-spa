@@ -3,7 +3,7 @@ import { MsalProvider } from '@azure/msal-react';
 import { PublicClientApplication } from "@azure/msal-browser";
 import { PageLayout } from './components/PageLayout';
 import { AuthDetails } from './pages/AuthDetails';
-import { ToDoList } from './pages/ToDoList';
+import {GoalsList } from './pages/GoalsList';
 
 import './styles/App.css';
 import HomePage from "./pages/HomePage";
@@ -15,9 +15,8 @@ const Pages = () => {
         <Routes>
             <Route path="/" element={<HomePage />} />
 
-
-            <Route path="/todolist" element={<ToDoList />} />
             <Route path="/profile" element={<UserPage />} />
+            <Route path="/goals" element={<GoalsList />} />
             <Route path="/auth" element={<AuthDetails />} />
 
             {/* Fallback Route */}
