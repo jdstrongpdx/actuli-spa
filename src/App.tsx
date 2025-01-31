@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
-
+import { PublicClientApplication } from "@azure/msal-browser";
 import { PageLayout } from './components/PageLayout';
 import { AuthDetails } from './pages/AuthDetails';
 import { ToDoList } from './pages/ToDoList';
@@ -8,12 +8,16 @@ import { ToDoList } from './pages/ToDoList';
 import './styles/App.css';
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
+import UserPage from "./pages/UserPage";
 
 const Pages = () => {
     return (
         <Routes>
-            <Route path="/todolist" element={<ToDoList />} />
             <Route path="/" element={<HomePage />} />
+
+
+            <Route path="/todolist" element={<ToDoList />} />
+            <Route path="/profile" element={<UserPage />} />
             <Route path="/auth" element={<AuthDetails />} />
 
             {/* Fallback Route */}
@@ -29,7 +33,8 @@ const Pages = () => {
  * PublicClientApplication instance via context as well as all hooks and components provided by msal-react. For more, visit:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
  */
-const App = ({ instance }) => {
+
+const App: React.FC<{ instance: PublicClientApplication; }> = ({ instance }) => {
     return (
         <MsalProvider instance={instance}>
             <PageLayout>
