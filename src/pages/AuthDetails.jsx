@@ -1,7 +1,7 @@
 import { AuthenticatedTemplate } from "@azure/msal-react";
 import { useMsal } from "@azure/msal-react";
 import { Container } from "react-bootstrap";
-import { IdTokenData } from "../components/DataDisplay";
+import { IdTokenData } from "../components/auth/DataDisplay";
 
 
 /***
@@ -9,7 +9,7 @@ import { IdTokenData } from "../components/DataDisplay";
  * ID token Claims: https://docs.microsoft.com/en-us/azure/active-directory/develop/id-tokens#claims-in-an-id-token
  * Optional Claims:  https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-optional-claims#v10-and-v20-optional-claims-set
  */
-export const Home = () => {
+export const AuthDetails = () => {
     const { instance } = useMsal();
     const activeAccount = instance.getActiveAccount();
     return (

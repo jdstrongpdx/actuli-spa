@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap');
+/*   ----- Variables  -----  */
+:root {
+    --color-gold: #C2A769;
+    --color-dark-blue: #313444;
+    --color-light-blue: #5990C7;
+    --transition-speed: 0.3s ease;
+    font-family: "Bitter", serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+main {
+    max-width: 1140px;
+    margin: auto;
+    flex: 1;
+}
+
+.color-gold {
+    color: var(--color-gold);
+}
+
+.color-dark-blue {
+    color: var(--color-dark-blue);
+}
+
+.color-light-blue {
+    color: var(--color-light-blue);
+}
+
+.primary-button {
+    background-color: var(--color-light-blue) !important;
+    color: white !important;
+    border: none;
+}
+
+.primary-button:hover {
+    background-color: var(--color-gold) !important;
+}
+
+
+/* LIGHT THEME */
+.light {
+    --background-color: #FDFFFE;
+    --text-color: #000000;
+    --link-color: #000000;
+    --link-hover-color: #007bff;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* DARK THEME */
+.dark {
+    --background-color: #121212;
+    --text-color: #FDFFFE;
+    --link-color: #FDFFFE;
+    --link-hover-color: #007bff;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.dark .navbar  {
+    background-color: var(--background-color);
+}
+
+.dark .navbar-brand,
+.dark .navbar-brand:hover {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.dark .nav-link,
+.dark a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.dark .nav-link.active {
+    color: var(--link-color);
+    border-bottom: 2px solid var(--link-color);
+}
+
+.dark .nav-link:hover,
+.dark a:hover {
+    color: var(--link-hover-color);
+    border-bottom: 2px solid var(--link-hover-color);
+}
+
+.light .navbar  {
+    background-color: var(--background-color);
+}
+
+.light .navbar-brand,
+.light .navbar-brand:hover {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.light .nav-link,
+.light a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.light .nav-link.active {
+    color: var(--link-color);
+    border-bottom: 2px solid var(--link-color);
+}
+
+.light .nav-link:hover,
+.light a:hover {
+    color: var(--link-hover-color);
+    border-bottom: 2px solid var(--link-hover-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
+}
+
+.App-link {
+    color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+

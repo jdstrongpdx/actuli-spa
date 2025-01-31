@@ -2,16 +2,22 @@ import { Routes, Route } from 'react-router-dom';
 import { MsalProvider } from '@azure/msal-react';
 
 import { PageLayout } from './components/PageLayout';
-import { Home } from './pages/Home';
+import { AuthDetails } from './pages/AuthDetails';
 import { ToDoList } from './pages/ToDoList';
 
 import './styles/App.css';
+import HomePage from "./pages/HomePage";
+import NotFound from "./pages/NotFound";
 
 const Pages = () => {
     return (
         <Routes>
             <Route path="/todolist" element={<ToDoList />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/auth" element={<AuthDetails />} />
+
+            {/* Fallback Route */}
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 };

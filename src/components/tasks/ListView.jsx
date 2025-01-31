@@ -4,8 +4,8 @@ import ListGroup from "react-bootstrap/ListGroup";
 import { ToDoForm } from "./ToDoForm";
 import { ToDoItem } from "./ToDoItem";
 
-import useFetchWithMsal from '../hooks/useFetchWithMsal';
-import { protectedResources } from "../authConfig";
+import useFetchWithMsal from '../../hooks/useFetchWithMsal';
+import { protectedResources } from "../../authConfig";
 
 function usePrevious(value) {
     const ref = useRef();

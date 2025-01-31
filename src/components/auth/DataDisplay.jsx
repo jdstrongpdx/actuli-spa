@@ -1,8 +1,8 @@
 import { Table } from "react-bootstrap";
-import { protectedResources } from "../authConfig";
-import { createClaimsTable } from "../utils/claimUtils";
+import { protectedResources } from "../../authConfig";
+import { createClaimsTable } from "../../utils/claimUtils";
 
-import "../styles/App.css";
+import "../../styles/App.css";
 
 export const ProfileData = (props) => {
     const tableRows = Object.entries(props.graphData).map((entry, index) => {
