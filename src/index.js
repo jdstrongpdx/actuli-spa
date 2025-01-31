@@ -8,6 +8,7 @@ import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/index.css';
+import {UserSettingsProvider} from "./contexts/UserSettingsContext";
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.
@@ -35,7 +36,9 @@ msalInstance.addEventCallback((event) => {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-    <BrowserRouter>
-        <App instance={msalInstance} />
-    </BrowserRouter>
+    <UserSettingsProvider>
+        <BrowserRouter>
+            <App instance={msalInstance} />
+        </BrowserRouter>
+    </UserSettingsProvider>
 );
