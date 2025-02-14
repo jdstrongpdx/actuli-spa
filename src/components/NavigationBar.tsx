@@ -87,7 +87,7 @@ export const NavigationBar = () => {
                             </Nav.Item>
                             <AuthenticatedTemplate>
                                 <Nav.Item>
-                                    <Nav.Link href="/profile" eventKey="profile">Profile</Nav.Link>
+                                    <Nav.Link href="/user/view" eventKey="profile">Profile</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
                                     <Nav.Link href="/goals" eventKey="goals">Goals</Nav.Link>

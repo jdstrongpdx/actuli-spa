@@ -9,13 +9,15 @@ import './styles/App.css';
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
 import UserPage from "./pages/UserPage";
+import UserEdit from "./components/users/UserEdit";
 
 const Pages = () => {
     return (
         <Routes>
             <Route path="/" element={<HomePage />} />
 
-            <Route path="/profile" element={<UserPage />} />
+            <Route path="/user/view" element={<UserPage />} />
+            <Route path="/user/edit" element={<UserEdit />} />
             <Route path="/goals" element={<GoalsList />} />
             <Route path="/auth" element={<AuthDetails />} />
 

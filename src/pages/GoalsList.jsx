@@ -3,18 +3,18 @@ import { MsalAuthenticationTemplate } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { loginRequest, protectedResources } from "../authConfig";
 import useFetchWithMsal from '../hooks/useFetchWithMsal';
-import { GoalListView } from "../components/tasks/GoalListView";
+import { GoalListView } from "../components/goals/GoalListView";
 
 const GoalListContent = () => {
     const { error, execute } = useFetchWithMsal({
-        scopes: protectedResources.goalsAPI.scopes.read,
+        scopes: protectedResources.user.scopes.read,
     });
 
     const [goalListData, setGoalListData] = useState(null);
 
     useEffect(() => {
         if (!goalListData) {
-            execute("GET", protectedResources.goalsAPI.endpoint).then((response) => {
+            execute("GET", protectedResources.user.endpoint).then((response) => {
                 setGoalListData(response);
             });
         }

@@ -1,56 +1,67 @@
-import {ChangeEvent, useState} from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import {statesList} from "../../data/statesList.ts";
-import {IUserProfile} from "../../interfaces/IUser.ts";
+import { IApplicationUserForm } from "../../interfaces/IApplicationUser";
+import { protectedResources } from "../../authConfig";
+import useFetchWithMsal from "../../hooks/useFetchWithMsal";
+import { useMsal } from "@azure/msal-react";
+import { replaceNullWithEmptyString, replaceEmptyStringWithNull} from "../../utilities/NormalizationUtilities";
 
-interface IUserForm {
-    "id": string,
-    "email": string,
-    "mobilePhoneNumber": string,
-    "website": string,
-    "aboutMe": string,
-    "firstName": string,
-    "lastName": string,
-    "street": string,
-    "city": string,
-    "state": string,
-    "postalCode": string,
-    "country": string,
-    "dateOfBirth": Date | string
-}
-
-const initialValues: IUserForm = {
-    "id": '',
-    "email": '',
-    "mobilePhoneNumber": '',
-    "website": '',
-    "aboutMe": '',
-    "firstName": '',
-    "lastName": '',
-    "street": '',
-    "city": '',
-    "state": '',
-    "postalCode": '',
-    "country": '',
-    "dateOfBirth": ''
-}
+const initialValues: IApplicationUserForm = {
+    userId: "", // UUID
+    name: "",
+    username: "",
+    email: "",
+    firstName: "",
+    lastName: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+    dateOfBirth: "",
+    homePhone: "",
+    mobilePhone: "",
+    website: "",
+};
 
 const ProfileEdit = () => {
-    const [userProfile, setUserProfile] = useState(initialValues);
+    const navigate = useNavigate();
+    const { instance } = useMsal();
+    const activeAccount = instance.getActiveAccount();
+    const [userData, setUserData] = useState<IApplicationUserForm>(initialValues); // Form state
+    const { error, execute } = useFetchWithMsal({
+        scopes: protectedResources.user.scopes.read,
+    });
 
-    // TODO form validation
-    const getIsFormValid = () => {
-        return true;
-    }
 
-    const clearForm = () => {
-        setUserProfile(initialValues);
-    };
+
+    // Fetch the user data on component load
+    useEffect(() => {
+        execute("GET", protectedResources.user.endpoint)
+            .then((response) => {
+                const processedData = replaceNullWithEmptyString(response); // Replace nulls
+                setUserData((prevProfile) => ({
+                    ...prevProfile,
+                    ...processedData, // Merge processed data into form state
+                }));
+                if (activeAccount?.idTokenClaims) {
+                    setUserData((prevProfile) => ({
+                        ...prevProfile,
+                        username: activeAccount.idTokenClaims.preferred_username || prevProfile.username,
+                        name: activeAccount.idTokenClaims.name || prevProfile.name,
+                    }));
+                }
+            })
+            .catch((err) => {
+                console.error("Error fetching user data:", err);
+            });
+    }, [execute]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-
-        setUserProfile((prevProfile) => ({
+        setUserData((prevProfile) => ({
             ...prevProfile,
             [name]: value,
         }));
@@ -58,45 +69,39 @@ const ProfileEdit = () => {
 
     const handleSubmit = (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        const updatedProfile = convertProfileOnSubmit(userProfile);
-        // TODO update user data
-        alert("Account created!");
-        clearForm();
+        var normalizedData = replaceEmptyStringWithNull(userData);
+        execute("PUT", protectedResources.user.endpoint, normalizedData).then((response) => {
+        });
+        // TODO alert user on success/error, redirect to user/view
     };
 
-    function convertProfileOnSubmit(formValues: IUserForm): IUserProfile {
-        const { address1, address2, city, state, postalCode, country, dateOfBirth, ...rest } = formValues;
-
-        return {
-            ...rest, // Spread all other properties directly
-            dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(), // Convert dateOfBirth
-            address: {
-                address1,
-                address2,
-                city,
-                state,
-                postalCode,
-                country,
-            },
-        };
+    if (!userData) {
+        return <>Loading...</>;
     }
 
     return (
         <div className="App">
+
             <Form onSubmit={handleSubmit}>
                 <fieldset>
                     <h2>Profile Edit</h2>
 
+                    <h5>Non-editable Information:</h5>
+                    <p className='mb-2'><strong>User Id:</strong> {userData.userId || "N/A"}</p>
+                    <p className='mb-2'><strong>Username:</strong> {userData.username || "N/A"}</p>
+                    <p className='mb-2'><strong>Account Name:</strong> {userData.name || "N/A"}</p>
+                    <br></br>
                     {/* First Name */}
                     <Form.Group className="mb-3" controlId="formFirstName">
                         <Form.Label>
                             First name <sup>*</sup>
                         </Form.Label>
                         <Form.Control
+                            required
                             type="text"
                             placeholder="First name"
                             name="firstName"
-                            value={userProfile.firstName}
+                            value={userData.firstName}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -107,71 +112,23 @@ const ProfileEdit = () => {
                             Last name <sup>*</sup>
                         </Form.Label>
                         <Form.Control
+                            required
                             type="text"
                             placeholder="Last name"
                             name="lastName"
-                            value={userProfile.lastName}
+                            value={userData.lastName}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
-                    {/* Avatar */}
-                    <Form.Group className="mb-3" controlId="formAvatar">
-                        <Form.Label>Avatar URL</Form.Label>
+                    {/* Email */}
+                    <Form.Group className="mb-3" controlId="formEmail">
+                        <Form.Label>Email</Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="Avatar URL"
-                            name="avatar"
-                            value={userProfile.avatar}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    {/* Bio */}
-                    <Form.Group className="mb-3" controlId="formBio">
-                        <Form.Label>Bio</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Tell us about yourself..."
-                            name="bio"
-                            value={userProfile.bio}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    {/* Mobile Number */}
-                    <Form.Group className="mb-3" controlId="formMobileNumber">
-                        <Form.Label>Mobile Number</Form.Label>
-                        <Form.Control
-                            type="tel"
-                            placeholder="Mobile Number"
-                            name="mobileNumber"
-                            value={userProfile.mobileNumber}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    {/* Website */}
-                    <Form.Group className="mb-3" controlId="formWebsite">
-                        <Form.Label>Website</Form.Label>
-                        <Form.Control
-                            type="url"
-                            placeholder="Website URL"
-                            name="website"
-                            value={userProfile.website}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-
-                    {/* Date of Birth */}
-                    <Form.Group className="mb-3" controlId="formDateOfBirth">
-                        <Form.Label>Date of Birth</Form.Label>
-                        <Form.Control
-                            type="date"
-                            placeholder="Enter your date of birth"
-                            name="dateOfBirth"
-                            value={userProfile.dateOfBirth}
+                            placeholder="your-email@example.com"
+                            name="email"
+                            value={userData.email}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -183,7 +140,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Address Line 1"
                             name="address1"
-                            value={userProfile.address1}
+                            value={userData.address1}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -195,7 +152,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Address Line 2"
                             name="address2"
-                            value={userProfile.address2}
+                            value={userData.address2}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -207,29 +164,21 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="City"
                             name="city"
-                            value={userProfile.city}
+                            value={userData.city}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
                     {/* State */}
-                    <Form.Group className="mb-3">
-                        <Form.Label htmlFor="formState">Select a State:</Form.Label>
-                        <Form.Select
-                            id="formState"
+                    <Form.Group className="mb-3" controlId="formState">
+                        <Form.Label>State</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="State"
                             name="state"
-                            value={userProfile.state}
+                            value={userData.state}
                             onChange={handleChange}
-                        >
-                            <option value="" disabled>
-                                -- Select a State --
-                            </option>
-                            {Object.entries(statesList).map(([key, state]) => (
-                                <option key={key} value={state.stateAbbreviation}>
-                                    {state.stateName}
-                                </option>
-                            ))}
-                        </Form.Select>
+                        />
                     </Form.Group>
 
                     {/* Postal Code */}
@@ -239,7 +188,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Postal Code"
                             name="postalCode"
-                            value={userProfile.postalCode}
+                            value={userData.postalCode}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -251,17 +200,62 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Country"
                             name="country"
-                            value={userProfile.country}
+                            value={userData.country}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
+                    {/* Mobile Phone Number */}
+                    <Form.Group className="mb-3" controlId="formMobilePhone">
+                        <Form.Label>Mobile Phone Number</Form.Label>
+                        <Form.Control
+                            type="tel"
+                            placeholder="Mobile Phone"
+                            name="mobilePhone"
+                            value={userData.mobilePhone}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
 
+                    {/* Home Phone Number */}
+                    <Form.Group className="mb-3" controlId="formHomePhone">
+                        <Form.Label>Home Phone Number</Form.Label>
+                        <Form.Control
+                            type="tel"
+                            placeholder="Home Phone"
+                            name="homePhone"
+                            value={userData.homePhone}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    {/* Website */}
+                    <Form.Group className="mb-3" controlId="formWebsite">
+                        <Form.Label>Website</Form.Label>
+                        <Form.Control
+                            type="url"
+                            placeholder="Website URL"
+                            name="website"
+                            value={userData.website}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
+
+                    {/* Date of Birth */}
+                    <Form.Group className="mb-3" controlId="formDateOfBirth">
+                        <Form.Label>Date of Birth</Form.Label>
+                        <Form.Control
+                            type="date"
+                            placeholder="Enter your date of birth"
+                            name="dateOfBirth"
+                            value={userData.dateOfBirth}
+                            onChange={handleChange}
+                        />
+                    </Form.Group>
 
                     <Button
                         type="submit"
                         variant="primary"
-                        disabled={!getIsFormValid()}
                     >
                         Update Profile
                     </Button>

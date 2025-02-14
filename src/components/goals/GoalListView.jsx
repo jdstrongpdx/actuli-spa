@@ -20,7 +20,7 @@ function usePrevious(value) {
 export const GoalListView = (props) => {
 
     const { error, execute } = useFetchWithMsal({
-        scopes: protectedResources.goalsAPI.scopes.write
+        scopes: protectedResources.user.scopes.write
     });
 
     const [goals, setGoals] = useState(props.goalListData);
@@ -30,7 +30,7 @@ export const GoalListView = (props) => {
             description: description,
         };
 
-        execute('POST', protectedResources.goalsAPI.endpoint, newGoal).then((response) => {
+        execute('POST', protectedResources.user.endpoint, newGoal).then((response) => {
             if (response) {
                 setGoals([...goals, response]);
             }
@@ -38,7 +38,7 @@ export const GoalListView = (props) => {
     };
 
     const handleDeleteGoal = (id) => {
-        execute("DELETE", protectedResources.goalsAPI.endpoint + `/${id}`).then((response) => {
+        execute("DELETE", protectedResources.user.endpoint + `/${id}`).then((response) => {
             if (response.status === 200 || response.status === 204) {
                 const remainingGoals = goals.filter(goal => id !== goal.id);
                 setGoals(remainingGoals);
@@ -50,7 +50,7 @@ export const GoalListView = (props) => {
         const updatedGoal = goals.find((goal) => id === goal.id);
         updatedGoal.description = description;
 
-        execute('PUT', protectedResources.goalsAPI.endpoint + `/${id}`, updatedGoal).then((response) => {
+        execute('PUT', protectedResources.user.endpoint + `/${id}`, updatedGoal).then((response) => {
             const updatedGoals = goals.map((goal) => {
                 if (id === goal.id) {
                     return { ...goal, description: description };

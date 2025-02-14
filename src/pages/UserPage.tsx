@@ -8,14 +8,14 @@ import UserView from "../components/users/UserView";
 
 const UserContent = () => {
     const { error, execute } = useFetchWithMsal({
-        scopes: protectedResources.usersAPI.scopes.read,
+        scopes: protectedResources.user.scopes.read,
     });
 
     const [userData, setUserData] = useState(null);
 
     useEffect(() => {
         if (!userData) {
-            execute("GET", protectedResources.usersAPI.endpoint).then((response) => {
+            execute("GET", protectedResources.user.endpoint).then((response) => {
                 setUserData(response);
             });
         }
