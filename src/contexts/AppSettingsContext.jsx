@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Create the context
-const UserSettingsContext = createContext(undefined);
+const AppSettingsContext = createContext(undefined);
 
 // Define the provider component
 export const UserSettingsProvider = ({ children }) => {
@@ -25,14 +25,14 @@ export const UserSettingsProvider = ({ children }) => {
 
 
     return (
-        <UserSettingsContext.Provider value={{ theme, toggleTheme }}>
+        <AppSettingsContext.Provider value={{ theme, toggleTheme }}>
             {children}
-        </UserSettingsContext.Provider>
+        </AppSettingsContext.Provider>
     );
 };
 
 export const useUserSettings = () => {
-    const context = useContext(UserSettingsContext);
+    const context = useContext(AppSettingsContext);
     if (!context) {
         throw new Error('useUserSettings must be used within a UserSettingsProvider');
     }

@@ -3,7 +3,7 @@ import { Nav, Navbar, Dropdown, Container, DropdownButton } from 'react-bootstra
 import { loginRequest } from '../authConfig';
 import {useLocation} from "react-router-dom";
 import {useState, useEffect} from "react";
-import {useUserSettings} from "../contexts/UserSettingsContext";
+import {useUserSettings} from "../contexts/AppSettingsContext";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 
 export const NavigationBar = () => {
@@ -87,7 +87,7 @@ export const NavigationBar = () => {
                             </Nav.Item>
                             <AuthenticatedTemplate>
                                 <Nav.Item>
-                                    <Nav.Link href="/user/view" eventKey="profile">Profile</Nav.Link>
+                                    <Nav.Link href="/user" eventKey="profile">Profile</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
                                     <Nav.Link href="/goals" eventKey="goals">Goals</Nav.Link>

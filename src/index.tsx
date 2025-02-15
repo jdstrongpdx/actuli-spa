@@ -5,7 +5,7 @@ import { msalConfig } from './authConfig.js';
 import App from './App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/index.css';
-import {UserSettingsProvider} from "./contexts/UserSettingsContext";
+import {UserSettingsProvider} from "./contexts/AppSettingsContext";
 
 /**
  * MSAL should be instantiated outside of the component tree to prevent it from being re-instantiated on re-renders.

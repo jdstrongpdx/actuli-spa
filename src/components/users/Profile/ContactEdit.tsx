@@ -1,16 +1,14 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import {ChangeEvent, useEffect, useRef, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { IApplicationUserForm } from "../../interfaces/IApplicationUser";
-import { protectedResources } from "../../authConfig";
-import useFetchWithMsal from "../../hooks/useFetchWithMsal";
-import { useMsal } from "@azure/msal-react";
-import { replaceNullWithEmptyString, replaceEmptyStringWithNull} from "../../utilities/NormalizationUtilities";
+import { protectedResources } from "../../../authConfig";
+import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
+import { replaceEmptyStringWithNull} from "../../../utilities/normalizationUtilities";
+import {useUser} from "../../../contexts/UserContext";
+import {Contact} from "../../../interfaces/AppUser";
+import ToastStack from "../../../utilities/ToastStack";
 
-const initialValues: IApplicationUserForm = {
-    userId: "", // UUID
-    name: "",
-    username: "",
+const initialValues: Contact = {
     email: "",
     firstName: "",
     lastName: "",
@@ -27,52 +25,69 @@ const initialValues: IApplicationUserForm = {
 };
 
 const ProfileEdit = () => {
+    const { userData, refetchUserData, userLoading } = useUser();
+    const [formData, setFormData] = useState<any | null>(initialValues);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { instance } = useMsal();
-    const activeAccount = instance.getActiveAccount();
-    const [userData, setUserData] = useState<IApplicationUserForm>(initialValues); // Form state
+    const toastRef = useRef<ToastStackRef>(null);
     const { error, execute } = useFetchWithMsal({
         scopes: protectedResources.user.scopes.read,
     });
 
-
-
-    // Fetch the user data on component load
     useEffect(() => {
-        execute("GET", protectedResources.user.endpoint)
-            .then((response) => {
-                const processedData = replaceNullWithEmptyString(response); // Replace nulls
-                setUserData((prevProfile) => ({
-                    ...prevProfile,
-                    ...processedData, // Merge processed data into form state
-                }));
-                if (activeAccount?.idTokenClaims) {
-                    setUserData((prevProfile) => ({
-                        ...prevProfile,
-                        username: activeAccount.idTokenClaims.preferred_username || prevProfile.username,
-                        name: activeAccount.idTokenClaims.name || prevProfile.name,
-                    }));
-                }
-            })
-            .catch((err) => {
-                console.error("Error fetching user data:", err);
-            });
-    }, [execute]);
+        if (userData) {
+            setFormData(userData.profile.contact);
+        }
+    }, [userData]);
+
+    const refreshData = async () => {
+        await refetchUserData(); // Refresh user data from API
+        setFormData(userData); // Update the form with refreshed data
+    };
+
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setUserData((prevProfile) => ({
+        setFormData((prevProfile) => ({
             ...prevProfile,
             [name]: value,
         }));
     };
 
-    const handleSubmit = (e: { preventDefault: () => void }) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        var normalizedData = replaceEmptyStringWithNull(userData);
-        execute("PUT", protectedResources.user.endpoint, normalizedData).then((response) => {
-        });
-        // TODO alert user on success/error, redirect to user/view
+
+        try {
+            setLoading(true);
+
+            // Normalize and prepare the data for submission
+            const normalizedData = replaceEmptyStringWithNull(formData);
+
+            // Use `execute` to make the PUT request
+            const response = await execute(
+                "PUT",
+                `${protectedResources.user.endpoint}profile/contact`,
+                normalizedData
+            );
+
+            // Handle successful submission
+            toastRef.current.addToast("success", "Profile updated successfully!");
+        } catch (error) {
+            // Handle submission errors
+            console.error("Error during form submission:", error);
+
+            // Check if a custom error object is returned from execute
+            if (error instanceof Error) {
+                toastRef.current.addToast("danger", error.message);
+            } else {
+                toastRef.current.addToast(
+                    "danger",
+                    "An unexpected error occurred. Please try again later."
+                );
+            }
+        } finally {
+            setLoading(false); // Ensure loading state is cleared regardless of success or error
+        }
     };
 
     if (!userData) {
@@ -87,7 +102,7 @@ const ProfileEdit = () => {
                     <h2>Profile Edit</h2>
 
                     <h5>Non-editable Information:</h5>
-                    <p className='mb-2'><strong>User Id:</strong> {userData.userId || "N/A"}</p>
+                    <p className='mb-2'><strong>User Id:</strong> {userData.id || "N/A"}</p>
                     <p className='mb-2'><strong>Username:</strong> {userData.username || "N/A"}</p>
                     <p className='mb-2'><strong>Account Name:</strong> {userData.name || "N/A"}</p>
                     <br></br>
@@ -101,7 +116,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="First name"
                             name="firstName"
-                            value={userData.firstName}
+                            value={formData.firstName}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -116,7 +131,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Last name"
                             name="lastName"
-                            value={userData.lastName}
+                            value={formData.lastName}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -128,7 +143,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="your-email@example.com"
                             name="email"
-                            value={userData.email}
+                            value={formData.email}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -140,7 +155,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Address Line 1"
                             name="address1"
-                            value={userData.address1}
+                            value={formData.address1}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -152,7 +167,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Address Line 2"
                             name="address2"
-                            value={userData.address2}
+                            value={formData.address2}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -164,7 +179,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="City"
                             name="city"
-                            value={userData.city}
+                            value={formData.city}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -176,7 +191,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="State"
                             name="state"
-                            value={userData.state}
+                            value={formData.state}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -188,7 +203,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Postal Code"
                             name="postalCode"
-                            value={userData.postalCode}
+                            value={formData.postalCode}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -200,7 +215,7 @@ const ProfileEdit = () => {
                             type="text"
                             placeholder="Country"
                             name="country"
-                            value={userData.country}
+                            value={formData.country}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -212,7 +227,7 @@ const ProfileEdit = () => {
                             type="tel"
                             placeholder="Mobile Phone"
                             name="mobilePhone"
-                            value={userData.mobilePhone}
+                            value={formData.mobilePhone}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -224,7 +239,7 @@ const ProfileEdit = () => {
                             type="tel"
                             placeholder="Home Phone"
                             name="homePhone"
-                            value={userData.homePhone}
+                            value={formData.homePhone}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -236,7 +251,7 @@ const ProfileEdit = () => {
                             type="url"
                             placeholder="Website URL"
                             name="website"
-                            value={userData.website}
+                            value={formData.website}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -248,7 +263,7 @@ const ProfileEdit = () => {
                             type="date"
                             placeholder="Enter your date of birth"
                             name="dateOfBirth"
-                            value={userData.dateOfBirth}
+                            value={formData.dateOfBirth}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -256,11 +271,13 @@ const ProfileEdit = () => {
                     <Button
                         type="submit"
                         variant="primary"
+                        disabled={loading}
                     >
                         Update Profile
                     </Button>
                 </fieldset>
             </Form>
+            <ToastStack ref={toastRef} />
         </div>
     );
 };

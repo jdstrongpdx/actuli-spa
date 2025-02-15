@@ -1,6 +1,6 @@
 import { NavigationBar } from "./NavigationBar";
 import Footer from "./Footer";
-import {useUserSettings} from "../contexts/UserSettingsContext";
+import {useUserSettings} from "../contexts/AppSettingsContext";
 
 export const PageLayout = (props) => {
     const { theme } = useUserSettings();

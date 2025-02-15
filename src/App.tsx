@@ -8,16 +8,19 @@ import {GoalsList } from './pages/GoalsList';
 import './styles/App.css';
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
+import UserView from "./components/users/UserView";
+import ContactView from "./components/users/Profile/ContactView";
+import ContactEdit from "./components/users/Profile/ContactEdit";
 import UserPage from "./pages/UserPage";
-import UserEdit from "./components/users/UserEdit";
 
 const Pages = () => {
     return (
         <Routes>
             <Route path="/" element={<HomePage />} />
 
-            <Route path="/user/view" element={<UserPage />} />
-            <Route path="/user/edit" element={<UserEdit />} />
+            <Route path="/user" element={<UserPage />} />
+            <Route path="/user/profile/contact/view" element={<ContactView />} />
+            <Route path="/user/profile/contact/edit" element={<ContactEdit />} />
             <Route path="/goals" element={<GoalsList />} />
             <Route path="/auth" element={<AuthDetails />} />
 
