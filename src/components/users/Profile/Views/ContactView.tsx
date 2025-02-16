@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import {Button} from "react-bootstrap";
-import {useUser} from "../../../contexts/UserContext";
+import {useUser} from "../../../../contexts/UserContext";
 
 const ContactView = () => {
     const { userData, error, userLoading } = useUser();
@@ -45,20 +45,6 @@ const ContactView = () => {
                     {userData.profile.contact.dateOfBirth
                         ? new Date(userData.profile.contact.dateOfBirth).toLocaleDateString()
                         : ""
-                    }
-                </p>
-                <p className="mt-0 mb-0 text-muted font-italic">
-                    Created on:
-                    {userData.createdAt
-                        ? new Date(userData.createdAt).toLocaleDateString()
-                        : "None"
-                    }
-                </p>
-                <p className="mt-0 mb-0 text-muted font-italic">
-                    Updated on:
-                    {userData.modifiedAt
-                        ? new Date(userData.modifiedAt).toLocaleDateString()
-                        : "None"
                     }
                 </p>
                 <br></br>

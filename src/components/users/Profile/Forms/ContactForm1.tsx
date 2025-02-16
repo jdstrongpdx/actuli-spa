@@ -1,12 +1,12 @@
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { protectedResources } from "../../../authConfig";
-import useFetchWithMsal from "../../../hooks/useFetchWithMsal";
-import { replaceEmptyStringWithNull} from "../../../utilities/normalizationUtilities";
-import {useUser} from "../../../contexts/UserContext";
-import {Contact} from "../../../interfaces/AppUser";
-import ToastStack from "../../../utilities/ToastStack";
+import { protectedResources } from "../../../../authConfig";
+import useFetchWithMsal from "../../../../hooks/useFetchWithMsal";
+import { replaceEmptyStringWithNull} from "../../../../utilities/normalizationUtilities";
+import {useUser} from "../../../../contexts/UserContext"
+import {Contact} from "../../../../interfaces/AppUser";
+import ToastStack, {ToastStackRef} from "../../../../utilities/ToastStack";
 
 const initialValues: Contact = {
     email: "",
@@ -24,7 +24,7 @@ const initialValues: Contact = {
     website: "",
 };
 
-const ProfileEdit = () => {
+const ContactForm1 = () => {
     const { userData, refetchUserData, userLoading } = useUser();
     const [formData, setFormData] = useState<any | null>(initialValues);
     const [loading, setLoading] = useState(false);
@@ -36,15 +36,15 @@ const ProfileEdit = () => {
 
     useEffect(() => {
         if (userData) {
+            refreshData();
             setFormData(userData.profile.contact);
         }
     }, [userData]);
 
     const refreshData = async () => {
-        await refetchUserData(); // Refresh user data from API
-        setFormData(userData); // Update the form with refreshed data
+        await refetchUserData();
+        setFormData(userData);
     };
-
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -282,4 +282,4 @@ const ProfileEdit = () => {
     );
 };
 
-export default ProfileEdit;
+export default ContactForm1;

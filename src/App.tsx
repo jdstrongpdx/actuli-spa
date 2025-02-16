@@ -8,10 +8,8 @@ import {GoalsList } from './pages/GoalsList';
 import './styles/App.css';
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
-import UserView from "./components/users/UserView";
-import ContactView from "./components/users/Profile/ContactView";
-import ContactEdit from "./components/users/Profile/ContactEdit";
 import UserPage from "./pages/UserPage";
+import ProfileMultiPartForm from "./components/users/ProfileMultiPartForm";
 
 const Pages = () => {
     return (
@@ -19,8 +17,7 @@ const Pages = () => {
             <Route path="/" element={<HomePage />} />
 
             <Route path="/user" element={<UserPage />} />
-            <Route path="/user/profile/contact/view" element={<ContactView />} />
-            <Route path="/user/profile/contact/edit" element={<ContactEdit />} />
+            <Route path="/user/profile/edit" element={<ProfileMultiPartForm />} />
             <Route path="/goals" element={<GoalsList />} />
             <Route path="/auth" element={<AuthDetails />} />
 

@@ -1,7 +1,7 @@
 import { MsalAuthenticationTemplate } from '@azure/msal-react';
 import { InteractionType } from '@azure/msal-browser';
 import { loginRequest } from "../authConfig";
-import UserView from "../components/users/UserView";
+import ProfileView from "../components/users/ProfileView";
 import {UserProvider, useUser} from "../contexts/UserContext";
 
 const UserContent = () => {
@@ -15,7 +15,7 @@ const UserContent = () => {
         return <div>Error: {error.message}</div>;
     }
 
-    return <>{userData ? <UserView userData={userData} /> : null}</>;
+    return <>{userData ? <ProfileView userData={userData} /> : null}</>;
 };
 
 /**

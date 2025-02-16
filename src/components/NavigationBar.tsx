@@ -101,7 +101,7 @@ export const NavigationBar = () => {
                         {/* Right-aligned content */}
                         <Nav className="ms-auto">
                             <Nav.Item>
-                                <button onClick={toggleTheme} style={{ padding: '10px', fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                <button onClick={toggleTheme} style={{  fontSize: '24px', background: 'none', border: 'none', cursor: 'pointer' }}>
                                     {theme === 'light' ? <MdDarkMode /> :   <MdLightMode style={{ filter: 'invert(1)' }} />
                                     }
                                 </button>
