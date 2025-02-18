@@ -1,9 +1,9 @@
-export interface TypeData {
-    id: string;
-    types: TypeData[];
+export interface TypesResponse {
+    States: TypeGroup;
+    Genders: TypeGroup;
 }
 
-export interface TypeItem {
+export interface TypeGroup {
     id: number;
     name: string;
     description: string;

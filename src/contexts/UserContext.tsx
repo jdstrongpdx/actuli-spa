@@ -5,6 +5,7 @@ import AppUser from "../interfaces/AppUser";
 import {useMsal} from "@azure/msal-react";
 import {replaceNullWithEmptyString} from "../utilities/normalizationUtilities";
 import { ApiRoutes } from "../config/apiRoutes";
+import {toast} from "react-toastify";
 
 // Define the type for user data
 interface UserContextProps {
@@ -35,7 +36,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             const response = await execute("GET", protectedResources.backend.endpoint + ApiRoutes.GetUser);
             if (!response) {
-                console.error("No data received from Users API");
+                toast.error("No data received from API");
                 return;
             }
 
@@ -62,8 +63,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     name: idTokenClaims.name || prevProfile.name || "",
                 };
             });
+
+            toast.success("User data successfully fetched!");
         } catch (err) {
-            console.error("Error fetching user data:", err);
+            toast.error("Error fetching user data:", err);
         } finally {
             setUserLoading(false);
         }
@@ -80,8 +83,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             const updatedData: AppUser = replaceNullWithEmptyString(response);
             setUserData(updatedData);
-
-            console.log("User data successfully updated!");
         } catch (err) {
             console.error("Error updating user data:", err);
         } finally {

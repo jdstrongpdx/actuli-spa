@@ -3,11 +3,12 @@ export enum ApiRoutes {
     GetUser = "/user",
     UpdateUser = "/user",
     DeleteUser = "/user",
+    UpdateUserContact = "/user/profile/contact",
     GetAllUsers = "/users",
     GetUserById = "/users/:id",
     UpdateUserById = "/users/:id",
     DeleteUserById = "/users/:id",
-    UpdateUserContact = "/users/profile/contact",
+
     GetTypes = "/types"
 }
 

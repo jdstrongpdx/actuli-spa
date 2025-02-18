@@ -1,11 +1,17 @@
 
 import {useUser} from "../contexts/UserContext";
-import {Link} from "react-router-dom";
 import {Button, Col, Accordion} from "react-bootstrap";
 import ContactView from "../components/users/Profile/Views/ContactView";
+import { Link, useSearchParams } from "react-router-dom";
+
 
 const UserProfile = () => {
     const { userData, error, userLoading, refreshUserData } = useUser();
+    const [searchParams] = useSearchParams();
+
+    // Get 'defaultTab' from the query string, default to "0" if not provided
+    const defaultTab = searchParams.get("tab") || "0";
+
 
     if (userLoading) {
         return <div>Loading...</div>;
@@ -34,7 +40,7 @@ const UserProfile = () => {
                 </Button>
             </Col>
             <div className="ml-3">
-                <Accordion defaultActiveKey="0">
+                <Accordion defaultActiveKey={defaultTab}>
 
                     {/* User Information */}
                     <Accordion.Item eventKey="0">

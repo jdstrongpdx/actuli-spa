@@ -1,9 +1,11 @@
-import {ChangeEvent, useRef, useState} from "react";
+import {ChangeEvent, useEffect, useRef, useState} from "react";
 import { Form, Button } from "react-bootstrap";
-import { replaceEmptyStringWithNull} from "../../../../utilities/normalizationUtilities";
+import {replaceEmptyStringWithNull, replaceNullWithEmptyString} from "../../../../utilities/normalizationUtilities";
 import AppUser, {Contact} from "../../../../interfaces/AppUser";
 import {ApiRoutes} from "../../../../config/apiRoutes";
 import {useTypes} from "../../../../contexts/TypesContext";
+import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 interface ContactForm1Props {
     userData: AppUser | null,
@@ -28,9 +30,18 @@ const initialValues: Contact = {
 };
 
 const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser }) => {
-    const [formData, setFormData] = useState<any | null>(initialValues);
+    const [formData, setFormData] = useState<Contact>(initialValues);
     const [loading, setLoading] = useState(false);
-    const { typesData } = useTypes();
+    const {typesData} = useTypes();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (userData) {
+            const normalizedContact: Contact = replaceNullWithEmptyString(userData.profile.contact);
+
+            setFormData(normalizedContact);
+        }
+    }, [])
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -48,42 +59,30 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
 
             // Normalize and prepare the data for submission
             const normalizedData = replaceEmptyStringWithNull(formData);
-
-            await updateUser(ApiRoutes.UpdateUser, normalizedData);
-
-            // Handle successful submission
-
+            await updateUser(ApiRoutes.UpdateUserContact, normalizedData);
+            toast.success("Contact Updated Successfully");
+            navigate("/user?tab=1");
         } catch (error) {
-            // Handle submission errors
-            console.error("Error during form submission:", error);
-
-            // Check if a custom error object is returned from execute
             if (error instanceof Error) {
-                console.error("danger", error.message);
+                toast.error("Error Updating Contact: " + error);
             } else {
-                console.error("An unknown error occurred.")
+                toast.error("An unknown error occurred.")
             }
         } finally {
             setLoading(false); // Ensure loading state is cleared regardless of success or error
         }
     };
 
-    if (!userData) {
+    if (!userData || !typesData) {
         return <>Loading...</>;
     }
 
     return (
         <div className="App">
-
             <Form onSubmit={handleSubmit}>
                 <fieldset>
-                    <h2>Profile Edit</h2>
+                    <h2>Contact Edit</h2>
 
-                    <h5>Non-editable Information:</h5>
-                    <p className='mb-2'><strong>User Id:</strong> {userData.id || "N/A"}</p>
-                    <p className='mb-2'><strong>Username:</strong> {userData.username || "N/A"}</p>
-                    <p className='mb-2'><strong>Account Name:</strong> {userData.name || "N/A"}</p>
-                    <br></br>
                     {/* First Name */}
                     <Form.Group className="mb-3" controlId="formFirstName">
                         <Form.Label>
@@ -167,13 +166,13 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                         <Form.Label>State</Form.Label>
                         <Form.Select
                             name="state"
-                            value={formData.state}
-                            onChange={handleChange}
+                            value={formData.state} // Bind the selected value to the form data
+                            onChange={handleChange} // Handle changes to update the state
                         >
                             <option value="">Select a State</option>
-                            {typesData.types.map((type, index) => (
-                                <option key={index} value={type}>
-                                    {type}
+                            {typesData.States.data.map((state) => (
+                                <option key={state.id} value={state.value}>
+                                    {state.value}
                                 </option>
                             ))}
                         </Form.Select>

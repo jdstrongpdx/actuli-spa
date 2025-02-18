@@ -63,7 +63,7 @@ const ProfileEditForm: React.FC = () => {
     };
 
     if (userLoading) {
-        return <div>Loading Test...</div>;
+        return <div>Loading...</div>;
     }
 
     if (error) {

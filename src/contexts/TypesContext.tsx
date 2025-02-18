@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { protectedResources } from "../authConfig";
 import useFetchWithMsal from "../hooks/useFetchWithMsal";
-import {TypeData} from "../interfaces/TypeData";
+import {TypesResponse} from "../interfaces/TypeData";
 import { ApiRoutes } from "../config/apiRoutes";
+import { toast } from 'react-toastify'
 
 interface TypeContextProps {
-    typesData: TypeData | null;
+    typesData: TypesResponse | null;
     error: Error | null;
     typesLoading: boolean;
     refetchTypesData: () => void;
@@ -18,33 +19,35 @@ export const TypesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         scopes: protectedResources.backend.scopes.read,
     });
 
-    const [typesData, setTypesData] = useState<TypeData | null>(null);
+    const [typesData, setTypesData] = useState<TypesResponse | null>(null);
     const [typesLoading, setTypesLoading] = useState<boolean>(true);
 
     const fetchTypesData = async () => {
-        setTypesLoading(true);
+        if (!typesData) {
+            setTypesLoading(true);
 
-        try {
-            // Properly await the asynchronous execute call
-            const response = await execute("GET", protectedResources.backend.endpoint + ApiRoutes.GetTypes);
+            try {
+                // Properly await the asynchronous execute call
+                const response = await execute("GET", protectedResources.backend.endpoint + ApiRoutes.GetTypes);
 
-            console.log("Response:", response); // Confirm what the resolved value is
+                toast.success("Types data successfully fetched!");
 
-            // Verify that the response is not undefined or null
-            if (!response) {
-                console.error("No data received from Types API");
-                return;
+                // Verify that the response is not undefined or null
+                if (!response) {
+                    toast.error("No data received from Types API");
+                    return;
+                }
+
+                // Assume the response is the expected data
+                const data: TypesResponse = response;
+
+                // Set the resolved data to state
+                setTypesData(data);
+            } catch (err) {
+                toast.error("Error fetching user data:", err);
+            } finally {
+                setTypesLoading(false);
             }
-
-            // Assume the response is the expected data
-            const data: TypeData = response;
-
-            // Set the resolved data to state
-            setTypesData(data);
-        } catch (err) {
-            console.error("Error fetching user data:", err);
-        } finally {
-            setTypesLoading(false);
         }
     };
 

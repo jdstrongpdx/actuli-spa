@@ -1,8 +1,9 @@
 import { NavigationBar } from "./NavigationBar";
 import Footer from "./Footer";
 import {useUserSettings} from "../contexts/AppSettingsContext";
+import {ToastContainer} from "react-toastify";
 
-export const PageLayout = (props) => {
+export const PageLayout: React.FC<{ children: React.ReactNode}> = (props) => {
     const { theme } = useUserSettings();
     /**
      * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
@@ -12,6 +13,7 @@ export const PageLayout = (props) => {
     return (
         <>
             <div className="d-flex flex-column min-vh-100">
+                <ToastContainer />
                 <div className={theme}>
 
                     {/* Header */}
