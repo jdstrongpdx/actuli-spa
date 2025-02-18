@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap";
 import { protectedResources } from "../../authConfig";
-import { createClaimsTable } from "../../utils/claimUtils";
+import { createClaimsTable } from "../../utilities/claimUtils";
 
 import "../../styles/App.css";
 

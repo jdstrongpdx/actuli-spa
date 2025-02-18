@@ -1,15 +1,38 @@
-import IAppUser from "../../interfaces/AppUser";
-import ContactView from "./Profile/Views/ContactView";
-import Accordion from 'react-bootstrap/Accordion';
 
-const ProfileView = ({ userData }: { userData?: IAppUser }) => {
+import {useUser} from "../contexts/UserContext";
+import {Link} from "react-router-dom";
+import {Button, Col, Accordion} from "react-bootstrap";
+import ContactView from "../components/users/Profile/Views/ContactView";
+
+const UserProfile = () => {
+    const { userData, error, userLoading, refreshUserData } = useUser();
+
+    if (userLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     if (!userData) {
-        return <h3>Loading...</h3>;
+        return <div>Loading User Profile...</div>;
     }
+
     return (
         <>
             <h1>Your Profile</h1>
+
+            <Col>
+                <Link to="/user/profile/edit">
+                    <Button variant="primary">
+                        Edit Profile Information
+                    </Button>
+                </Link>
+                <Button variant="secondary" onClick={e => refreshUserData()}>
+                    Refresh Profile Information
+                </Button>
+            </Col>
             <div className="ml-3">
                 <Accordion defaultActiveKey="0">
 
@@ -128,7 +151,7 @@ const ProfileView = ({ userData }: { userData?: IAppUser }) => {
                 </Accordion>
             </div>
         </>
-    )
+        )
 };
 
-export default ProfileView;
+export default UserProfile;

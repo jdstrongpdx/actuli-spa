@@ -1,19 +1,6 @@
-import {Link} from "react-router-dom";
-import {Button} from "react-bootstrap";
-import {useUser} from "../../../../contexts/UserContext";
+import AppUser from "../../../../interfaces/AppUser";
 
-const ContactView = () => {
-    const { userData, error, userLoading } = useUser();
-
-    if (userLoading) {
-        return <h3>Loading...</h3>;
-    }
-    else if (error) {
-        return <h3>Error: {error.message}</h3>;
-    }
-    else if (!userData) {
-        return <h3>Error retrieving user data.</h3>;
-    }
+const ContactView: React.FC<{userData: AppUser}> = ({userData}) => {
     return (
         <>
             <h1>Your Profile</h1>
@@ -47,12 +34,6 @@ const ContactView = () => {
                         : ""
                     }
                 </p>
-                <br></br>
-                <Link to="/user/profile/contact/edit">
-                    <Button variant="primary">
-                        Edit my Profile
-                    </Button>
-                </Link>
             </div>
         </>
     )

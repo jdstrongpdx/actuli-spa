@@ -4,27 +4,24 @@ import useFetchWithMsal from "../hooks/useFetchWithMsal";
 import AppUser from "../interfaces/AppUser";
 import {useMsal} from "@azure/msal-react";
 import {replaceNullWithEmptyString} from "../utilities/normalizationUtilities";
+import { ApiRoutes } from "../config/apiRoutes";
 
 // Define the type for user data
 interface UserContextProps {
     userData: AppUser | null;
     error: Error | null;
     userLoading: boolean;
-    refetchUserData: () => void;
+    refreshUserData: () => void;
+    updateUser: (route: string, data: Partial<AppUser>) => Promise<void>;
 }
 
 // Create the UserContext with default values
-const UserContext = createContext<UserContextProps>({
-    userData: null,
-    error: null,
-    userLoading: true,
-    refetchUserData: () => {},
-});
+const UserContext = createContext<UserContextProps | null>(null);
 
 // Create the UserProvider component
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { error, execute } = useFetchWithMsal({
-        scopes: protectedResources.user.scopes.read,
+        scopes: protectedResources.backend.scopes.read,
     });
     const { instance } = useMsal();
     const activeAccount = instance.getActiveAccount();
@@ -36,9 +33,9 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserLoading(true);
 
         try {
-            const response = await execute("GET", protectedResources.user.endpoint);
+            const response = await execute("GET", protectedResources.backend.endpoint + ApiRoutes.GetUser);
             if (!response) {
-                console.error("No data received from API");
+                console.error("No data received from Users API");
                 return;
             }
 
@@ -67,8 +64,26 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
         } catch (err) {
             console.error("Error fetching user data:", err);
-            // Show UI error notifications
-            // Example: showErrorNotification("Failed to fetch user data. Please try again later.");
+        } finally {
+            setUserLoading(false);
+        }
+    };
+
+    const updateUser = async (route: string, data: Partial<AppUser>): Promise<void> => {
+        setUserLoading(true);
+        try {
+            const response = await execute("PUT", protectedResources.backend.endpoint + route, data);
+            if (!response) {
+                console.error("No response from API when updating user data");
+                return;
+            }
+
+            const updatedData: AppUser = replaceNullWithEmptyString(response);
+            setUserData(updatedData);
+
+            console.log("User data successfully updated!");
+        } catch (err) {
+            console.error("Error updating user data:", err);
         } finally {
             setUserLoading(false);
         }
@@ -86,7 +101,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 userData,
                 error,
                 userLoading,
-                refetchUserData: fetchUserData,
+                refreshUserData: fetchUserData,
+                updateUser: updateUser,
             }}
         >
             {children}

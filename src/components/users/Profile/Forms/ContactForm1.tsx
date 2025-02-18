@@ -1,12 +1,15 @@
-import {ChangeEvent, useEffect, useRef, useState} from "react";
-import { useNavigate } from "react-router-dom";
+import {ChangeEvent, useRef, useState} from "react";
 import { Form, Button } from "react-bootstrap";
-import { protectedResources } from "../../../../authConfig";
-import useFetchWithMsal from "../../../../hooks/useFetchWithMsal";
 import { replaceEmptyStringWithNull} from "../../../../utilities/normalizationUtilities";
-import {useUser} from "../../../../contexts/UserContext"
-import {Contact} from "../../../../interfaces/AppUser";
-import ToastStack, {ToastStackRef} from "../../../../utilities/ToastStack";
+import AppUser, {Contact} from "../../../../interfaces/AppUser";
+import {ApiRoutes} from "../../../../config/apiRoutes";
+import {useTypes} from "../../../../contexts/TypesContext";
+
+interface ContactForm1Props {
+    userData: AppUser | null,
+    error: Error | null,
+    updateUser: (route: string, data: Partial<AppUser>) => Promise<void>,
+}
 
 const initialValues: Contact = {
     email: "",
@@ -24,31 +27,14 @@ const initialValues: Contact = {
     website: "",
 };
 
-const ContactForm1 = () => {
-    const { userData, refetchUserData, userLoading } = useUser();
+const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser }) => {
     const [formData, setFormData] = useState<any | null>(initialValues);
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const toastRef = useRef<ToastStackRef>(null);
-    const { error, execute } = useFetchWithMsal({
-        scopes: protectedResources.user.scopes.read,
-    });
-
-    useEffect(() => {
-        if (userData) {
-            refreshData();
-            setFormData(userData.profile.contact);
-        }
-    }, [userData]);
-
-    const refreshData = async () => {
-        await refetchUserData();
-        setFormData(userData);
-    };
+    const { typesData } = useTypes();
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData((prevProfile) => ({
+        setFormData((prevProfile: Contact) => ({
             ...prevProfile,
             [name]: value,
         }));
@@ -63,27 +49,19 @@ const ContactForm1 = () => {
             // Normalize and prepare the data for submission
             const normalizedData = replaceEmptyStringWithNull(formData);
 
-            // Use `execute` to make the PUT request
-            const response = await execute(
-                "PUT",
-                `${protectedResources.user.endpoint}profile/contact`,
-                normalizedData
-            );
+            await updateUser(ApiRoutes.UpdateUser, normalizedData);
 
             // Handle successful submission
-            toastRef.current.addToast("success", "Profile updated successfully!");
+
         } catch (error) {
             // Handle submission errors
             console.error("Error during form submission:", error);
 
             // Check if a custom error object is returned from execute
             if (error instanceof Error) {
-                toastRef.current.addToast("danger", error.message);
+                console.error("danger", error.message);
             } else {
-                toastRef.current.addToast(
-                    "danger",
-                    "An unexpected error occurred. Please try again later."
-                );
+                console.error("An unknown error occurred.")
             }
         } finally {
             setLoading(false); // Ensure loading state is cleared regardless of success or error
@@ -187,13 +165,18 @@ const ContactForm1 = () => {
                     {/* State */}
                     <Form.Group className="mb-3" controlId="formState">
                         <Form.Label>State</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="State"
+                        <Form.Select
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="">Select a State</option>
+                            {typesData.types.map((type, index) => (
+                                <option key={index} value={type}>
+                                    {type}
+                                </option>
+                            ))}
+                        </Form.Select>
                     </Form.Group>
 
                     {/* Postal Code */}
@@ -277,7 +260,6 @@ const ContactForm1 = () => {
                     </Button>
                 </fieldset>
             </Form>
-            <ToastStack ref={toastRef} />
         </div>
     );
 };

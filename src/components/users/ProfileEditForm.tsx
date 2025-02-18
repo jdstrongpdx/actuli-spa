@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-
 import ContactForm1 from "./Profile/Forms/ContactForm1";
 import EducationForm2 from "./Profile/Forms/EducationForm2";
 import WorkForm3 from "./Profile/Forms/WorkForm3";
@@ -15,8 +14,10 @@ import HealthForm8 from "./Profile/Forms/HealthForm8";
 import ActivitiesForm9 from "./Profile/Forms/ActivitiesForm9";
 import GivingForm10 from "./Profile/Forms/GivingForm10";
 import FinancesForm11 from "./Profile/Forms/FinancesForm11";
+import {useUser} from "../../contexts/UserContext";
 
-const ProfileMultiPartForm: React.FC = () => {
+const ProfileEditForm: React.FC = () => {
+    const { userData, error, userLoading, refreshUserData, updateUser } = useUser();
     const [currentStep, setCurrentStep] = useState(1);
     const [progress, setProgress] = useState(60);
 
@@ -35,7 +36,7 @@ const ProfileMultiPartForm: React.FC = () => {
     const renderStep = () => {
         switch (currentStep) {
             case 1:
-                return <ContactForm1/>;
+                return <ContactForm1 userData={userData} error={error} updateUser={updateUser}/>;
             case 2:
                 return <EducationForm2/>;
             case 3:
@@ -60,6 +61,18 @@ const ProfileMultiPartForm: React.FC = () => {
                 return <h2>Form Completed</h2>;
         }
     };
+
+    if (userLoading) {
+        return <div>Loading Test...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
+
+    if (!userData) {
+        return <div>Loading User Profile...</div>;
+    }
 
     return (
         <div>
@@ -103,4 +116,4 @@ const ProfileMultiPartForm: React.FC = () => {
     );
 };
 
-export default ProfileMultiPartForm;
+export default ProfileEditForm;
