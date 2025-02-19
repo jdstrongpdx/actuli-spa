@@ -49,6 +49,7 @@ export interface Contact {
 export interface Education {
     school: string;
     degreeType: string;
+    degreeName: string;
     city: string;
     state: string;
     country: string;

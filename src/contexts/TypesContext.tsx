@@ -39,12 +39,12 @@ export const TypesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                 }
 
                 // Assume the response is the expected data
-                const data: TypesResponse = response;
+                const data: any = response;
 
                 // Set the resolved data to state
                 setTypesData(data);
             } catch (err) {
-                toast.error("Error fetching user data:", err);
+                toast.error("Error fetching user data: " + err);
             } finally {
                 setTypesLoading(false);
             }

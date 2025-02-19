@@ -66,7 +66,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             toast.success("User data successfully fetched!");
         } catch (err) {
-            toast.error("Error fetching user data:", err);
+            toast.error("Error fetching user data: " + err);
         } finally {
             setUserLoading(false);
         }
@@ -81,7 +81,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return;
             }
 
-            const updatedData: AppUser = replaceNullWithEmptyString(response);
+            const updatedData: any = replaceNullWithEmptyString(response);
             setUserData(updatedData);
         } catch (err) {
             console.error("Error updating user data:", err);

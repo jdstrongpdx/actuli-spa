@@ -1,6 +1,13 @@
 export interface TypesResponse {
-    States: TypeGroup;
-    Genders: TypeGroup;
+    states: TypeGroup;
+    countries: TypeGroup;
+    genders: TypeGroup;
+    threeLevelList: TypeGroup;
+    fiveLevelList: TypeGroup;
+    sevenLevelList: TypeGroup;
+    educationDegreeList: TypeGroup;
+    educationStatusList: TypeGroup;
+    educationGradeScaleList: TypeGroup;
 }
 
 export interface TypeGroup {

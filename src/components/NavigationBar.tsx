@@ -1,7 +1,7 @@
 import { AuthenticatedTemplate, UnauthenticatedTemplate, useMsal } from '@azure/msal-react';
 import { Nav, Navbar, Dropdown, Container, DropdownButton } from 'react-bootstrap';
 import { loginRequest } from '../authConfig';
-import {useLocation} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {useState, useEffect} from "react";
 import {useUserSettings} from "../contexts/AppSettingsContext";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
@@ -83,19 +83,19 @@ export const NavigationBar = () => {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav variant="underline" activeKey={activeKey} className="me-auto navbar">
                             <Nav.Item>
-                                <Nav.Link href="/" eventKey="">Home</Nav.Link>
+                                <Nav.Link as={Link} to="/" eventKey="">Home</Nav.Link>
                             </Nav.Item>
                             <AuthenticatedTemplate>
                                 <Nav.Item>
-                                    <Nav.Link href="/user" eventKey="profile">Profile</Nav.Link>
+                                    <Nav.Link as={Link} to="/user" eventKey="profile">Profile</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link href="/goals" eventKey="goals">Goals</Nav.Link>
+                                    <Nav.Link as={Link} to="/goals" eventKey="goals">Goals</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link href="/achievements" eventKey="achievements">Achievements</Nav.Link>
+                                    <Nav.Link as={Link} to="/achievements" eventKey="achievements">Achievements</Nav.Link>
                                 </Nav.Item>
-                            </ AuthenticatedTemplate>
+                            </AuthenticatedTemplate>
                         </Nav>
 
                         {/* Right-aligned content */}
@@ -107,7 +107,7 @@ export const NavigationBar = () => {
                                 </button>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link href="/auth" eventKey="auth">Auth Details</Nav.Link>
+                                <Nav.Link as={Link} to="/auth" eventKey="auth">Auth Details</Nav.Link>
                             </Nav.Item>
 
                             <AuthenticatedTemplate>

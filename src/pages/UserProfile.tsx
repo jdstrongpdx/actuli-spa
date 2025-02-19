@@ -3,6 +3,7 @@ import {useUser} from "../contexts/UserContext";
 import {Button, Col, Accordion} from "react-bootstrap";
 import ContactView from "../components/users/Profile/Views/ContactView";
 import { Link, useSearchParams } from "react-router-dom";
+import EducationView from "../components/users/Profile/Views/EducationView";
 
 
 const UserProfile = () => {
@@ -21,7 +22,7 @@ const UserProfile = () => {
         return <div>Error: {error.message}</div>;
     }
 
-    if (!userData) {
+    if (!userData || !userData.profile) {
         return <div>Loading User Profile...</div>;
     }
 
@@ -78,7 +79,7 @@ const UserProfile = () => {
                     <Accordion.Item eventKey="2">
                         <Accordion.Header>Education Information</Accordion.Header>
                         <Accordion.Body>
-                            <p>Education Information</p>
+                            <EducationView userData={userData} />
                         </Accordion.Body>
                     </Accordion.Item>
 

@@ -36,10 +36,9 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (userData) {
-            const normalizedContact: Contact = replaceNullWithEmptyString(userData.profile.contact);
-
-            setFormData(normalizedContact);
+        if (userData && userData.profile.contact) {
+            // data normalized in context
+            setFormData(userData.profile.contact);
         }
     }, [])
 
@@ -58,10 +57,12 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
             setLoading(true);
 
             // Normalize and prepare the data for submission
-            const normalizedData = replaceEmptyStringWithNull(formData);
+            const normalizedData: any = replaceEmptyStringWithNull(formData);
             await updateUser(ApiRoutes.UpdateUserContact, normalizedData);
             toast.success("Contact Updated Successfully");
             navigate("/user?tab=1");
+
+            // TODO: errors are not being blocked/handled
         } catch (error) {
             if (error instanceof Error) {
                 toast.error("Error Updating Contact: " + error);
@@ -69,7 +70,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                 toast.error("An unknown error occurred.")
             }
         } finally {
-            setLoading(false); // Ensure loading state is cleared regardless of success or error
+            setLoading(false);
         }
     };
 
@@ -93,7 +94,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="First name"
                             name="firstName"
-                            value={formData.firstName}
+                            value={formData?.firstName || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -108,7 +109,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="Last name"
                             name="lastName"
-                            value={formData.lastName}
+                            value={formData?.lastName || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -120,7 +121,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="your-email@example.com"
                             name="email"
-                            value={formData.email}
+                            value={formData?.email || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -132,7 +133,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="Address Line 1"
                             name="address1"
-                            value={formData.address1}
+                            value={formData?.address1 || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -144,7 +145,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="Address Line 2"
                             name="address2"
-                            value={formData.address2}
+                            value={formData?.address2 || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -156,7 +157,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="City"
                             name="city"
-                            value={formData.city}
+                            value={formData?.city || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -166,11 +167,11 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                         <Form.Label>State</Form.Label>
                         <Form.Select
                             name="state"
-                            value={formData.state} // Bind the selected value to the form data
-                            onChange={handleChange} // Handle changes to update the state
+                            value={formData?.state || ""}
+                            onChange={handleChange}
                         >
                             <option value="">Select a State</option>
-                            {typesData.States.data.map((state) => (
+                            {typesData.states.data.map((state) => (
                                 <option key={state.id} value={state.value}>
                                     {state.value}
                                 </option>
@@ -185,7 +186,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="text"
                             placeholder="Postal Code"
                             name="postalCode"
-                            value={formData.postalCode}
+                            value={formData?.postalCode || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -193,13 +194,18 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                     {/* Country */}
                     <Form.Group className="mb-3" controlId="formCountry">
                         <Form.Label>Country</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Country"
+                        <Form.Select
                             name="country"
-                            value={formData.country}
+                            value={formData?.country || ""}
                             onChange={handleChange}
-                        />
+                        >
+                            <option value="">Select an Country</option>
+                            {typesData.countries.data.map((country) => (
+                                <option key={country.id} value={country.value}>
+                                    {country.value}
+                                </option>
+                            ))}
+                        </Form.Select>
                     </Form.Group>
 
                     {/* Mobile Phone Number */}
@@ -209,7 +215,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="tel"
                             placeholder="Mobile Phone"
                             name="mobilePhone"
-                            value={formData.mobilePhone}
+                            value={formData?.mobilePhone || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -221,7 +227,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="tel"
                             placeholder="Home Phone"
                             name="homePhone"
-                            value={formData.homePhone}
+                            value={formData?.homePhone || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -233,11 +239,12 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="url"
                             placeholder="Website URL"
                             name="website"
-                            value={formData.website}
+                            value={formData?.website || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
 
+                    {/* TODO: Date is not parsing correctly on load */}
                     {/* Date of Birth */}
                     <Form.Group className="mb-3" controlId="formDateOfBirth">
                         <Form.Label>Date of Birth</Form.Label>
@@ -245,7 +252,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                             type="date"
                             placeholder="Enter your date of birth"
                             name="dateOfBirth"
-                            value={formData.dateOfBirth}
+                            value={formData?.dateOfBirth || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
@@ -255,7 +262,7 @@ const ContactForm1: React.FC<ContactForm1Props> = ({ userData, error, updateUser
                         variant="primary"
                         disabled={loading}
                     >
-                        Update Profile
+                        Update Contact
                     </Button>
                 </fieldset>
             </Form>

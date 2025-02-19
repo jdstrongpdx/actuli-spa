@@ -38,7 +38,7 @@ const ProfileEditForm: React.FC = () => {
             case 1:
                 return <ContactForm1 userData={userData} error={error} updateUser={updateUser}/>;
             case 2:
-                return <EducationForm2/>;
+                return <EducationForm2 userData={userData} error={error} updateUser={updateUser}/>;
             case 3:
                 return <WorkForm3/>;
             case 4:

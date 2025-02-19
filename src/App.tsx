@@ -4,15 +4,17 @@ import { InteractionType, PublicClientApplication } from "@azure/msal-browser";
 import { loginRequest } from "./authConfig";
 import { PageLayout } from './components/PageLayout';
 import { AuthDetails } from './pages/AuthDetails';
-import {GoalsList } from './pages/GoalsList';
+import {TypesProvider} from "./contexts/TypesContext";
+import {UserProvider} from "./contexts/UserContext";
 
 import './styles/App.css';
+
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
 import UserProfile from "./pages/UserProfile";
 import ProfileEditForm from "./components/users/ProfileEditForm";
-import {TypesProvider} from "./contexts/TypesContext";
-import {UserProvider} from "./contexts/UserContext";
+import GoalsPage from './pages/GoalsPage';
+import AchievementsPage from "./pages/AchievementsPage";
 
 
 /**
@@ -46,7 +48,8 @@ const App: React.FC<{ instance: PublicClientApplication }> = ({ instance }) => {
                                 <Route path="/" element={<HomePage />} />
                                 <Route path="/user" element={<UserProfile />} />
                                 <Route path="/user/profile/edit" element={<ProfileEditForm />} />
-                                <Route path="/goals" element={<GoalsList />} />
+                                <Route path="/goals" element={<GoalsPage />} />
+                                <Route path="/achievements" element={<AchievementsPage />} />
                                 <Route path="/auth" element={<AuthDetails />} />
                                 {/* Fallback Route */}
                                 <Route path="*" element={<NotFound />} />
