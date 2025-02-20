@@ -81,11 +81,8 @@ const ProfileEditForm: React.FC = () => {
             <p>Profile Progress Bar</p>
             <ProgressBar className="mb-3" now={progress} label={`${progress}%`} />
 
-            {/* Render the correct form */}
-            {renderStep()}
-
             {/* Button group for the form steps */}
-            <ButtonGroup className="mt-3">
+            <ButtonGroup className="mb-3">
                 <Button onClick={handleBack} disabled={currentStep === 1}>Back</Button>
                 {[
                     { step: 1, label: 'Contact' },
@@ -112,6 +109,11 @@ const ProfileEditForm: React.FC = () => {
 
                 <Button onClick={handleNext} disabled={currentStep === 11}>Next</Button>
             </ButtonGroup>
+
+            {/* Render the correct form */}
+            {renderStep()}
+
+
         </div>
     );
 };
