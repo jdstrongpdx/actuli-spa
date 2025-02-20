@@ -53,6 +53,7 @@ export const TypesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     useEffect(() => {
         fetchTypesData();
+        // eslint-disable-next-line
     }, [execute]);
 
     return (

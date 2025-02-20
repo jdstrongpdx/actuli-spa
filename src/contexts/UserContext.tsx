@@ -93,6 +93,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Fetch user data on mount
     useEffect(() => {
         fetchUserData();
+        // eslint-disable-next-line
     }, [execute]);
 
     // Expose user state and actions to children

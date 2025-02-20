@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Form, Button } from "react-bootstrap";
+import {Form, Button, Col} from "react-bootstrap";
 import AppUser, {Education} from "../../../../interfaces/AppUser";
 import {ApiRoutes} from "../../../../config/apiRoutes";
 import {useTypes} from "../../../../contexts/TypesContext";
@@ -7,6 +7,9 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import {useFormik} from "formik";
+import SelectField from "../../form/SelectField";
+import DateField from "../../form/DateField";
+import TextField from "../../form/TextField";
 
 interface EducationForm2Props {
     userData: AppUser | null,
@@ -88,6 +91,10 @@ const EducationForm2: React.FC<EducationForm2Props> = ({ userData, error, update
         formik.setValues(initialValues);
     }
 
+    const deleteEducation = () => {
+        // TODO complete this function
+    }
+
     useEffect(() => {
         if (userData && userData.profile.educationList.length > 0) {
             // data normalized in context
@@ -107,7 +114,7 @@ const EducationForm2: React.FC<EducationForm2Props> = ({ userData, error, update
         }
         else {
             toast.success("Education Updated Successfully");
-            navigate("/user?tab=2");
+            navigate("/user?view=education");
         }
     };
 
@@ -136,8 +143,11 @@ const EducationForm2: React.FC<EducationForm2Props> = ({ userData, error, update
                     ))}
                 </ol>
 
+                <Col className="mb-2">
+                    <Button className="me-3" variant="primary" onClick={() => addNew()}>Add New</Button>
+                    <Button variant="warning" onClick={() => deleteEducation()}>Delete</Button>
+                </Col>
 
-                <Button variant="primary" onClick={() => addNew()}>Add New</Button>
             </>
         )
     }
@@ -156,205 +166,54 @@ const EducationForm2: React.FC<EducationForm2Props> = ({ userData, error, update
             <Form noValidate onSubmit={formik.handleSubmit}>
                 <fieldset>
 
-                    {/*  School Name */}
-                    <Form.Group className="mb-3" controlId="formSchoolName">
-                        <Form.Label>School Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            {...formik.getFieldProps('school')}
-                            isInvalid={Boolean(formik.touched.school && formik.errors.school)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.school}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <TextField formLabel="School Name" fieldName="school" formik={formik} />
+                    <SelectField
+                        formLabel="Degree Type"
+                        fieldName="degreeType"
+                        list={typesData.educationDegreeList.data}
+                        formik={formik}
+                    />
+                    <TextField formLabel="Degree Name" fieldName="degreeName" formik={formik} />
+                    <TextField formLabel="City" fieldName="city" formik={formik} />
+                    <SelectField
+                        formLabel="State/Province"
+                        fieldName="state"
+                        list={typesData.states.data}
+                        formik={formik}
+                    />
+                    <SelectField
+                        formLabel="Country"
+                        fieldName="country"
+                        list={typesData.countries.data}
+                        formik={formik}
+                    />
 
-                    {/* Degree Type */}
-                    <Form.Group className="mb-3" controlId="formDegreeType">
-                        <Form.Label>Degree Type</Form.Label>
-                        <Form.Control
-                            as="select"
-                            {...formik.getFieldProps('degreeType')}
-                            isInvalid={Boolean(formik.touched.degreeType && formik.errors.degreeType)}
-                        >
-                            <option value="">Select a Degree Type</option>
-                            {typesData.educationDegreeList.data.map((value, index) => (
-                                <option key={index} value={value.id}>
-                                    {value.value}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.degreeType}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <SelectField
+                        formLabel="Degree Status"
+                        fieldName="status"
+                        list={typesData.educationStatusList.data}
+                        formik={formik}
+                    />
 
-                    {/*  Degree Name */}
-                    <Form.Group className="mb-3" controlId="formDegreeName">
-                        <Form.Label>Degree Name</Form.Label>
-                        <Form.Control
-                            type="text"
-                            {...formik.getFieldProps('degreeName')}
-                            isInvalid={Boolean(formik.touched.degreeName && formik.errors.degreeName)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.degreeName}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <DateField formLabel="Completion/Graduation Date" fieldName="completionDate" formik={formik} />
 
-                    {/* City */}
-                    <Form.Group className="mb-3" controlId="formCity">
-                        <Form.Label>City</Form.Label>
-                        <Form.Control
-                            type="text"
-                            {...formik.getFieldProps('city')}
-                            isInvalid={Boolean(formik.touched.city && formik.errors.city)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.city}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <TextField formLabel="Grade" fieldName="grade" formik={formik} />
 
-                    {/* State */}
-                    <Form.Group className="mb-3" controlId="formState">
-                        <Form.Label>State/Province</Form.Label>
-                        <Form.Control
-                            as="select"
-                            {...formik.getFieldProps('state')}
-                            isInvalid={Boolean(formik.touched.state && formik.errors.state)}
-                        >
-                            <option value="">Select a State/Province</option>
-                            {typesData.states.data.map((value, index) => (
-                                <option key={index} value={value.id}>
-                                    {value.value}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.state}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <SelectField
+                        formLabel="Grade Scale"
+                        fieldName="gradeScale"
+                        list={typesData.educationGradeScaleList.data}
+                        formik={formik}
+                    />
 
-                    {/* Country */}
-                    <Form.Group className="mb-3" controlId="formCountry">
-                        <Form.Label>Country</Form.Label>
-                        <Form.Control
-                            as="select"
-                            {...formik.getFieldProps('country')}
-                            isInvalid={Boolean(formik.touched.country && formik.errors.country)}
-                        >
-                            <option value="">Select a Country</option>
-                            {typesData.countries.data.map((option, index) => (
-                                <option key={index} value={option.id}>
-                                    {option.value}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.country}
-                        </Form.Control.Feedback>
-                    </Form.Group>
+                    <TextField formLabel="Description" fieldName="description" formik={formik} />
 
-                    {/* Status */}
-                    <Form.Group className="mb-3" controlId="formStatus">
-                        <Form.Label>Country</Form.Label>
-                        <Form.Control
-                            as="select"
-                            {...formik.getFieldProps('status')}
-                            isInvalid={Boolean(formik.touched.status && formik.errors.status)}
-                        >
-                            <option value="">Select a Country</option>
-                            {typesData.educationStatusList.data.map((option, index) => (
-                                <option key={index} value={option.id}>
-                                    {option.value}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.status}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* TODO: Date is not parsing correctly on load */}
-                    {/* Completion Date */}
-                    <Form.Group className="mb-3" controlId="formCompletionDate">
-                        <Form.Label>Completion/Graduation Date</Form.Label>
-                        <Form.Control
-                            type="date"
-                            {...formik.getFieldProps('dateOfBirth')}
-                            isInvalid={Boolean(formik.touched.completionDate && formik.errors.completionDate)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.completionDate}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Grade */}
-                    <Form.Group className="mb-3" controlId="formGrade">
-                        <Form.Label>Grade</Form.Label>
-                        <Form.Control
-                            type="text"
-                            {...formik.getFieldProps('grade')}
-                            isInvalid={Boolean(formik.touched.grade && formik.errors.grade)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.grade}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Grade Scale */}
-                    <Form.Group className="mb-3" controlId="formGradeScale">
-                        <Form.Label>Grade Scale</Form.Label>
-                        <Form.Control
-                            as="select"
-                            {...formik.getFieldProps('gradeScale')}
-                            isInvalid={Boolean(formik.touched.gradeScale && formik.errors.gradeScale)}
-                        >
-                            <option value="">Select a Grade Scale</option>
-                            {typesData.educationGradeScaleList.data.map((option, index) => (
-                                <option key={index} value={option.id}>
-                                    {option.value}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.gradeScale}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Description */}
-                    <Form.Group className="mb-3" controlId="formDescription">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control
-                            type="text"
-                            {...formik.getFieldProps('description')}
-                            isInvalid={Boolean(formik.touched.description && formik.errors.description)}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.description}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    {/* Importance to you personally or to your career */}
-                    <Form.Group className="mb-3" controlId="formImportance">
-                        <Form.Label>Importance to you personally or to your career</Form.Label>
-                        <Form.Control
-                            as="select"
-                            {...formik.getFieldProps('importance')}
-                            isInvalid={Boolean(formik.touched.importance && formik.errors.importance)}
-                        >
-                            <option value="">Select an Importance</option>
-                            {typesData.fiveLevelList.data.map((option, index) => (
-                                <option key={index} value={option.id}>
-                                    {option.value}
-                                </option>
-                            ))}
-                        </Form.Control>
-                        <Form.Control.Feedback type="invalid">
-                            {formik.errors.importance}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
+                    <SelectField
+                        formLabel="Importance to you personally or to your career"
+                        fieldName="importance"
+                        list={typesData.fiveLevelList.data}
+                        formik={formik}
+                    />
 
                     <Button type="submit" disabled={formik.isSubmitting}>
                         {formik.isSubmitting ? "Submitting..." : "Update Education"}

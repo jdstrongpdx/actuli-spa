@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import Button from 'react-bootstrap/Button';
@@ -15,47 +15,49 @@ import ActivitiesForm9 from "./Profile/Forms/ActivitiesForm9";
 import GivingForm10 from "./Profile/Forms/GivingForm10";
 import FinancesForm11 from "./Profile/Forms/FinancesForm11";
 import {useUser} from "../../contexts/UserContext";
+import {useSearchParams} from "react-router-dom";
 
 const ProfileEditForm: React.FC = () => {
-    const { userData, error, userLoading, refreshUserData, updateUser } = useUser();
-    const [currentStep, setCurrentStep] = useState(1);
+    const { userData, error, userLoading, updateUser } = useUser(); // note: can access refreshUserData function from context
+    const [currentStep, setCurrentStep] = useState<string>("contact");
     const [progress, setProgress] = useState(60);
+    const [searchParams] = useSearchParams();
 
-    const handleNext = () => {
-        setCurrentStep((prev) => prev + 1);
-    };
+    useEffect(() => {
+        setCurrentStep(searchParams.get("view") || "contact");
+    }, [searchParams]);
 
-    const handleBack = () => {
-        setCurrentStep((prev) => prev - 1);
-    };
+    const handleStepChange = (view: string) => {
+        const url = new URL(window.location.href);
+        url.searchParams.set("view", view);
+        window.history.replaceState(null, "", url.toString());
 
-    const handleStepChange = (page: number) => {
-        setCurrentStep((page));
+        setCurrentStep((view));
     };
 
     const renderStep = () => {
         switch (currentStep) {
-            case 1:
+            case "contact":
                 return <ContactForm1 userData={userData} error={error} updateUser={updateUser}/>;
-            case 2:
+            case "education":
                 return <EducationForm2 userData={userData} error={error} updateUser={updateUser}/>;
-            case 3:
+            case "work":
                 return <WorkForm3/>;
-            case 4:
+            case "relationship":
                 return <RelationshipForm4/>;
-            case 5:
+            case "identity":
                 return <IdentityForm5/>;
-            case 6:
+            case "religion":
                 return <ReligionForm6/>;
-            case 7:
+            case "travel":
                 return <TravelForm7/>;
-            case 8:
+            case "health":
                 return <HealthForm8/>;
-            case 9:
+            case "activities":
                 return <ActivitiesForm9/>;
-            case 10:
+            case "giving":
                 return <GivingForm10/>;
-            case 11:
+            case "finances":
                 return <FinancesForm11/>;
             default:
                 return <h2>Form Completed</h2>;
@@ -83,19 +85,18 @@ const ProfileEditForm: React.FC = () => {
 
             {/* Button group for the form steps */}
             <ButtonGroup className="mb-3">
-                <Button onClick={handleBack} disabled={currentStep === 1}>Back</Button>
                 {[
-                    { step: 1, label: 'Contact' },
-                    { step: 2, label: 'Education' },
-                    { step: 3, label: 'Work' },
-                    { step: 4, label: 'Relationship' },
-                    { step: 5, label: 'Identity' },
-                    { step: 6, label: 'Religion' },
-                    { step: 7, label: 'Travel' },
-                    { step: 8, label: 'Health' },
-                    { step: 9, label: 'Activities' },
-                    { step: 10, label: 'Giving' },
-                    { step: 11, label: 'Finances' },
+                    { step: "contact", label: 'Contact' },
+                    { step: "education", label: 'Education' },
+                    { step: "work", label: 'Work' },
+                    { step: "relationship", label: 'Relationship' },
+                    { step: "identity", label: 'Identity' },
+                    { step: "religion", label: 'Religion' },
+                    { step: "travel", label: 'Travel' },
+                    { step: "health", label: 'Health' },
+                    { step: "activities", label: 'Activities' },
+                    { step: "giving", label: 'Giving' },
+                    { step: "finances", label: 'Finances' },
                 ].map(({ step, label }) => (
                     <Button
                         key={step}
@@ -105,9 +106,6 @@ const ProfileEditForm: React.FC = () => {
                         {label}
                     </Button>
                 ))}
-
-
-                <Button onClick={handleNext} disabled={currentStep === 11}>Next</Button>
             </ButtonGroup>
 
             {/* Render the correct form */}
